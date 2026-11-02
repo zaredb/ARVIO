@@ -1,7 +1,7 @@
 name: Build x86_64 APK
 
 on:
-  workflow_dispatch: # Allows you to manually trigger the build with a button click
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,11 +17,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Prepare Config & Permissions
+      - name: Accept Android SDK Licenses & Prepare Config
         run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
           cp secrets.defaults.properties secrets.properties
           chmod +x gradlew
 
