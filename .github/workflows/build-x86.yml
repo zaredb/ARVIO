@@ -1,0 +1,36 @@
+name: Build x86_64 APK
+
+on:
+  workflow_dispatch: # Allows you to manually trigger the build with a button click
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Prepare Config & Permissions
+        run: |
+          cp secrets.defaults.properties secrets.properties
+          chmod +x gradlew
+
+      - name: Build APK with x86/x86_64 Support
+        run: |
+          ./gradlew :app:assembleSideloadDebug -PincludeX86Abis=true
+
+      - name: Upload Generated APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: arvio-x86_64-debug-apk
+          path: app/build/outputs/apk/sideload/debug/*.apk
